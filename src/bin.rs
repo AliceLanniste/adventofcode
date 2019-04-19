@@ -1,14 +1,17 @@
 
-mod lib;
+// mod lib;
 
 fn main() {
     
    
-    let days =  [ lib::day1::run ,
-                lib::day2::run ];
+    let days =  [ aoc::day1::run ,
+                aoc::day2::run ];
     
-   let result = lib::day3::run();
-   println!("{}", result);
+   let result = aoc::day3::run();
+   for i in result {
+       println!("{}", i);
+   }
+   
 
 }
 

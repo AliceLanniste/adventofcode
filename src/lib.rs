@@ -182,7 +182,7 @@ pub mod day3 {
 
   type Grid = HashMap<(u32,u32), u32>;
 
-    pub fn run() ->String{
+    pub fn run() ->Vec<String>{
       
       let mut Pieces: Vec<Piece> = vec![];
       let file_strings = fs::read_to_string("data/day3.txt").unwrap();
@@ -192,27 +192,41 @@ pub mod day3 {
           let p:Piece = line.parse().expect("failed to parse");
           Pieces.push(p);
       }
+      
 
       let mut grid = Grid::new();
-      for pie in Pieces {
+      for pie in &Pieces {
         for(x,y) in pie.iterPoint() {
           *grid.entry((x,y)).or_default() += 1;
         }
       }
 
-      let result =part1(&grid);
-        result
+      let part1 = part1(&grid);
+      let part2 = part2(&grid, &Pieces);
+      let result = vec![part1, part2];
+      result
     }
 
     fn part1(grid:&Grid) -> String {
       let mut result = String::with_capacity(128);
       let count = grid.values().filter(|&&count| count > 1).count();
-      writeln!(&mut result, "day 2,part 1 - {}",count);
+      writeln!(&mut result, "day 3,part 1 - {}",count);
+    }
+
+    fn part2(grid:&Grid, ps:&[Piece]) -> String {
+      let mut result = String::with_capacity(128);
+      for p in ps {
+         if p.iterPoint().all(|i| grid[&i] == 1) {
+            writeln!(&mut result, "day 3,part 2 - {}",p.id);
+      
+         }
+      }
       result
     }
 
     #[derive(Debug)]
     struct Piece {
+        id: u32,
         x: u32,
         y: u32,
         width: u32,
@@ -240,6 +254,7 @@ pub mod day3 {
           //   where  F: FromStr
 
            Ok(Piece {
+             id: caps["id"].parse()?,
               x: caps["x"].parse()?,
               y: caps["y"].parse()?,
               width: caps["width"].parse()?,
@@ -280,10 +295,11 @@ pub mod day3 {
         }
 
         let (x,y) = (self.px,self.py);
-        self.px += 1;
+        self.py += 1;
         Some((x,y))
      }
    }
+    
     
 }
 
