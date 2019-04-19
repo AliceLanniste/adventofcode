@@ -6,3 +6,11 @@ authors = ["Alice"]
 [dependencies]
 regex = "1"
 lazy_static = "1.3.0"
+
+[lib]
+name = "aoc"
+path = "src/lib.rs"
+
+[[bin]]
+name="aoc_bin"
+path = "src/bin.rs"
