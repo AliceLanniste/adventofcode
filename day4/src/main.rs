@@ -19,7 +19,7 @@ macro_rules! err {
 }
 
 fn main() ->Result<()> {
-    let input = fs::read_to_string("data/text.txt").unwrap();
+    let input = fs::read_to_string("data/day4.txt").unwrap();
     let mut events:Vec<Event> = vec![];
     
     for line in input.lines() {
@@ -54,10 +54,11 @@ fn main() ->Result<()> {
             
         }
         sleeptime.insert(*id,counts);
-
        
     }
     part1(&sleeptime)?;
+    part2(&sleeptime)?;
+    
     Ok(())
 }
 type TimeRange = HashMap<u32,HashMap<u32,u32>>;
@@ -72,9 +73,31 @@ fn part1(time_r: &TimeRange) -> Result<()> {
         None => return err!("guard {} was never asleep", guard),
         Some(minute) => minute,
     };
+   
 
     writeln!(io::stdout(), "part 1, product: {}", guard*minute )?;
     Ok(())
+}
+
+fn part2(minutes_asleep: &TimeRange) -> Result<()> {
+        let mut sleepiest_minutes: HashMap<u32, (u32, u32)> = HashMap::new();
+        for (&guard, freq) in minutes_asleep.iter() {
+            let minute = match guard_minute(minutes_asleep,guard) {
+                Some(minute) => minute,
+                None => continue,
+            };
+            let count = freq[&minute];
+            sleepiest_minutes.insert(guard,(minute,count));
+        }
+
+            let(&sleep_guard, &(minute,_)) = sleepiest_minutes.iter()
+                                            .max_by_key(|&(_,(_,count))| count)
+                                            .unwrap();
+                
+        writeln!(io::stdout(), "part 2, product: {}", sleep_guard*minute )?;
+
+        
+        Ok(())
 }
 
 fn guard_minute(
