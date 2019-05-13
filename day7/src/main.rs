@@ -33,6 +33,8 @@ fn main() ->Result<()>{
     
 
     part1(&required_for)?;
+    part2(&required_for)?;
+
     Ok(())
 }
 
@@ -55,6 +57,40 @@ let mut next: Vec<char> = vec![];
     let answer: String = order.iter().cloned().collect();
      writeln!(io::stdout(), "step order: {}", answer)?;
     Ok(())
+}
+
+
+fn part2(require: &RequiredFor) -> Result<()> {
+    let mut workers = Worker::new(5);
+    let mut gg :HashSet<char> = HashSet::new();
+    let mut done: HashSet<char> = HashSet::new();
+    let mut store: Vec<char> = vec![];
+    let mut next: Vec<char> = vec![];
+
+    let mut second  = 0;
+    loop {
+        workers.run_one(&mut store, &mut done);
+
+        next_step(require, &gg, &done, &mut next);
+
+        if next.is_empty() && workers.all_idle() {
+            break;
+        }
+        for worker in workers.available() {
+            let next_step = match next.pop() {
+                Some(next_step) => next_step,
+                None => break,
+            };
+            gg.insert(next_step);
+            workers.work_on(worker, next_step);
+        }
+        second += 1
+    }
+
+    let answer: String = store.iter().cloned().collect();
+    writeln!(io::stdout(), "step order (part 2): {}", answer)?;
+writeln!(io::stdout(), "total seconds: {}", second)?;
+                Ok(())
 }
 
 
@@ -83,10 +119,10 @@ part 2
 */ 
 #[derive(Debug)]
 struct Worker {
-    status: vec<Status>,
+    status: Vec<Status>,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum Status {
     Idle,
     Working {name: char, time: u32}
@@ -94,32 +130,36 @@ enum Status {
 
 impl Worker {
  fn new(count: usize) -> Self {
-     Worker {status: vec![Status::Idle; count]}
+     
+    //  the trait std::clone::Clone is not implemented
+     Worker {status: vec![Status::Idle; count]}  
+
  }
 
     fn available(&self) -> Vec<usize> {
         let mut idles = vec![];
-        for (worker, &status) in self.status {
-            if status == Status::include_str! {
+        for (worker, &status) in self.status.iter().enumerate() {
+            if status == Status::Idle {
                 idles.push(worker);
-                }
+            }
           }
             idles
         }
 
     fn all_idle(&self) -> bool {
+        // cannot be applied to type'Status'
         self.status.iter().all(|s| *s == Status::Idle)
 
     }
 
-    fn work_on(&mut self, worker:usize, step:char) -> RetType {
+    fn work_on(&mut self, worker:usize, step:char) {
         let status = &mut self.status[worker];
         let time =(step as u32) -b'A' as u32 + 1 + 60;
 
-        *status = Status::Working{step, time}
+        *status = Status::Working{name:step, time}
     }
 
-    fn run_one(&mut self, order: &mut Vec<char>, done: &mut HashSet<char>) -> RetType {
+    fn run_one(&mut self, order: &mut Vec<char>, done: &mut HashSet<char>)  {
         for w in 0..self.status.len()  {
             let mut is_done = false;
             match self.status[w] {
