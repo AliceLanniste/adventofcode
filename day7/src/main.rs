@@ -1,3 +1,7 @@
+/// day 7的part 1问题是有向图，从顶点到终点的要经过哪些，当遇到多条路径，按字母大小选择
+/// part2的问题是现有5个通道，从顶点开始，依次安排5个通道，每个点运行的时间是('X' -'A' + 1)运行的时间总共是多少
+
+
 #[macro_use]
 extern crate lazy_static;
 extern crate regex;
