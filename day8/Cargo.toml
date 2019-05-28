@@ -2,5 +2,5 @@
 name = "day8"
 version = "0.1.0"
 authors = ["Alice"]
-
+edition = "2018"
 [dependencies]
