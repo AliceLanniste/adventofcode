@@ -16,7 +16,7 @@ fn main() -> Result<()> {
 
     let mut flat = vec![];
     for number in input.split_whitespace() {
-       flat.push(number.parse().expect("failed"));
+       flat.push(number.parse::<i32>()?);
 }    
     let tree = Node::build_tree(&flat);
 
