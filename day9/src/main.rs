@@ -4,14 +4,14 @@ use std::io::{self, Write};
 type Result<T> = std::result::Result<T, Box<std::error::Error>>;
 
 fn main() -> Result<()> {
-    part1()?;
+    // part1()?;
     part2()?;
     Ok(())
 }
 
 fn part1() -> Result<()> {
     const PLAYERS: usize = 466;
-    const LAST_MARBLE: u32 = 71736;
+    const LAST_MARBLE: u32 = 71436;
 
     let mut players = vec![Player::default(); PLAYERS];
     play_game(&mut players, &mut Circle::new(), LAST_MARBLE);
@@ -25,7 +25,7 @@ fn part1() -> Result<()> {
 
 fn part2() -> Result<()> {
     const PLAYERS: usize = 466;
-    const LAST_MARBLE: u32 = 7173600;
+    const LAST_MARBLE: u32 = 7143600;
 
     let mut players = vec![Player::default(); PLAYERS];
     play_game(&mut players, &mut Circle::new(), LAST_MARBLE);
