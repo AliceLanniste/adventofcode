@@ -6,24 +6,32 @@ use regex::Regex;
 use std::fs;
 use std::str::FromStr;
 use std::error::Error;
+use std::cmp;
 
-type Result<T> = std::result::Result<T,Error>;
+type Result<T> = std::result::Result<T,Box<Error>>;
 
 //组成单词的面积是最小的，在之后面积会变大，因此要想获得单词，成立的条件是new_area > current_area,
 
 fn main() {
-    let mut input = fs::read_to_string("data/text.txt").unwrap();
-    let mut Points_vec = vec![];
+    let mut input = fs::read_to_string("data/day10.txt").unwrap();
+    let mut Points_vec: Vec<Point> = vec![];
     for line in input.lines() {
         let point = line.parse().expect("error");
         Points_vec.push(point);
     }
+    let points_struct = Points::new(Points_vec);
+    
+
+    loop {
+// 必须加上current points排列
+        
+    }
 
 }
+// 对比此时和下时刻的面积，当下时刻面积大于此时的面积就是组成字母
+// 首先得把min和max确定
 
-
-
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 struct Points {
     points: Vec<Point>,
     second: u32,
@@ -43,9 +51,30 @@ impl Points {
         self.second += 1;
     }
 
+    fn bound(&self) -> Bound {
+        
+       let mut minX = self.points[0].x;
+       let mut maxX = self.points[0].x;
+       let mut minY = self.points[0].y;
+       let mut maxY = self.points[0].y;
 
-    fn dimesion(arg: Type) -> RetType {
-        unimplemented!();
+
+        for p in &self.points {
+            minX= cmp::min(minX, p.x);
+            maxX= cmp::max(maxX,p.x);
+            minY= cmp::min(minY, p.y);
+            maxY= cmp::max(maxY,p.y);
+        }
+
+        Bound {minX, maxX, minY, maxY}
+    }
+
+    fn area(&self) -> u32{
+        let bound =self.bound();
+        let width = bound.width();
+        let height = bound.height();
+
+        width * height
     }
 }
 
@@ -60,25 +89,28 @@ struct Bound {
 
 impl Bound {
 
-    fn width(arg: Type) -> usize {
-        (self.maxX - self.minX + 1) as usize 
+    fn width(&self) -> u32 {
+        (self.maxX - self.minX + 1) as u32 
     }
 
-    fn height(arg: Type) -> usize {
-        (self.maxY - self.minY + 1) as usize
+    fn height(&self) -> u32 {
+        (self.maxY - self.minY + 1) as u32
     }
 }
 
 
-#[derive(Debug,PartialEq)]
+#[derive(Debug,PartialEq,Clone)]
 struct Point {
-    Position:(i32, i32),
-    Velocity:(i32, i32)
+    x: i32,
+    y: i32,
+    vx: i32,
+    vy: i32
 }
 
 
 impl FromStr for Point {
-    type Err =Box<>;
+    type Err =Box<Error>;
+
     fn from_str(s: &str) -> Result<Point> {
         lazy_static! {
              static ref RE: Regex = Regex::new(r"(?x)
@@ -91,8 +123,10 @@ impl FromStr for Point {
         let caps = RE.captures(s).expect("failed to regex");
 
         Ok(Point {
-            Position:(caps["x"].parse()?, caps["y"].parse()?),
-            Velocity:(caps["vx"].parse()?, caps["vy"].parse()?)
+            x: caps["x"].parse()?, 
+            y: caps["y"].parse()?,
+            vx: caps["vx"].parse()?, 
+            vy:caps["vy"].parse()?
         })
     }
 }
